@@ -16,7 +16,13 @@
 
 右键点击通知，会打开anytxt显示当前搜索结果
 
-- [ ] 暂时还没写设置页面，需要添加anytxt的安装路径，有能力先自己改源码吧
+- [ ] 添加设置页面，需要设置anytxt的安装路径，有能力先自己改源码吧
+- [ ] 屏蔽掉插件市场的搜索框
+- [ ] 未启动anytxt.exe时提示用户，并且右键点击通知来启动anytxt.exe
+- [ ] 配置文件后缀名范围，屏蔽掉md和canvas文件，需anytxt的api支持，需命令行支持
+- [ ] 支持高级搜索模式，需anytxt的api支持，需命令行支持
+- [ ] 支持正则模式，并与obsidian的正则搜索适配，需anytxt的api支持，需命令行支持
+- [ ] 尝试提取obsidian搜索语法的关键字，转换为简单单词，到anytxt中搜索
 
 
 ## Manually installing the plugin
