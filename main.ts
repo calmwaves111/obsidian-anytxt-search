@@ -1,18 +1,28 @@
 import { App, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
-const DEFAULT_SETTINGS = {
-	anytxtApiUrl: 'http://127.0.0.1:9920'
+interface AnytxtSearchPluginSettings {
+	anytxtInstallPath: string;
+    anytxtApiUrl: string;
+
+}
+
+
+const DEFAULT_SETTINGS: AnytxtSearchPluginSettings = {
+	anytxtInstallPath: "",
+	anytxtApiUrl: 'http://127.0.0.1:9920',
+
 };
 
 export default class AnytxtSearchPlugin extends Plugin {
-	settings: any;
+	settings: AnytxtSearchPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
+        this.addSettingTab(new AnytxtSearchSettingTab(this.app, this));
 
 		this.registerDomEvent(document, 'keydown', (evt: KeyboardEvent) => {
 			const target = evt.target as HTMLInputElement;
-			if (evt.key === 'Enter' && target.getAttribute('enterkeyhint') === 'search' && target.type === 'search') {
+			if (evt.key === 'Enter' && target.getAttribute('enterkeyhint') === 'search' && target.type === 'search' && target.placeholder!="搜索已安装的插件……" && target.placeholder!="搜索社区插件……") { //本来应该区查找父容器是不是设置界面，插件市场界面，但是太深层了呀，还是放弃吧，直接用placeholder也行				const keyword = target.value;
 				const keyword = target.value;
 				this.searchAnytxt(keyword);
 			}
@@ -56,15 +66,15 @@ export default class AnytxtSearchPlugin extends Plugin {
 				new Notice('Anytxt API Error: ' + data.error.message, 10000);
 			} else {
                 // 创建一个Notice来显示匹配的文件数量
-                const notice1 = new Notice(`anytxt 匹配的文件数量: ${data.result.data.output.count}\n右键点击本通知打开anytxt`, 10000);
+                const notice1 = new Notice(`anytxt 匹配的文件数量: ${data.result.data.output.count}\n右键点击本通知，打开anytxt.exe`, 10000);
             
                 // 右键点击通知，打开Anytxt
                 notice1.noticeEl.oncontextmenu = () => {
                     // 创建一个命令行参数，用于启动Anytxt并搜索文件
                     // const command = `"D:\\AnyTXT Searcher\\ATGUI.exe" /s "${keyword}" /d "${vaultBasePath}" /e png`;
-                    const command = `"D:\\AnyTXT Searcher\\ATGUI.exe" /s "${keyword}" /d "${vaultBasePath}"`;
+                    const command = `"${this.settings.anytxtInstallPath}" /s "${keyword}" /d "${vaultBasePath}"`;
 
-                    console.log(command);
+                    // console.log(command);
             
                     // 执行命令
                     require('child_process').exec(command, (error: Error, stdout: string, stderr: string) => {
@@ -81,7 +91,28 @@ export default class AnytxtSearchPlugin extends Plugin {
 		})
 		.catch(error => {
             if (error.message === 'Failed to fetch') {
-                new Notice('无法连接到 Anytxt API 服务器，请运行anytxt.exe', 10000);
+                const notice2 = new Notice('无法连接到 Anytxt API 服务器，可能是anytxt.exe没有启动\n右键点击本通知，启动并打开anytxt.exe', 10000);
+				notice2.noticeEl.oncontextmenu = () => {
+					// *启动 anytxt.exe
+					// require('child_process').execFile(this.settings.anytxtInstallPath, (error: Error, stdout: string, stderr: string)=> {
+                    //     if (error) {
+                    //         new Notice('命令执行错误: ' + error.message, 10000);
+                    //     } else {
+                    //     }
+                    // });
+					// *启动 anytxt.exe，并且搜索当前关键词
+					const command = `"${this.settings.anytxtInstallPath}" /s "${keyword}" /d "${vaultBasePath}"`;
+					require('child_process').exec(command, (error: Error, stdout: string, stderr: string) => {
+						if (error) {
+							new Notice('命令执行错误: ' + error.message, 10000);
+						} else {
+						}
+					});
+				}
+
+
+
+				
             }else {
             new Notice('请求过程中发生错误: ' + error.message, 10000);
             }
@@ -96,7 +127,6 @@ export default class AnytxtSearchPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 }
-
 class AnytxtSearchSettingTab extends PluginSettingTab {
 	plugin: AnytxtSearchPlugin;
 
@@ -110,15 +140,27 @@ class AnytxtSearchSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
+		// 添加一个新的设置项来设置Anytxt的安装路径
 		new Setting(containerEl)
-			.setName('Anytxt API URL')
-			.setDesc('The URL of the Anytxt search API.')
+			.setName('Anytxt 安装路径')
+			.setDesc('Anytxt的安装路径，写到ATGUI.exe')
 			.addText(text => text
-				.setPlaceholder('Enter API URL')
-				.setValue(this.plugin.settings.anytxtApiUrl)
+				.setPlaceholder('Enter Anytxt installation path')
+				.setValue(this.plugin.settings.anytxtInstallPath || '')
 				.onChange(async (value) => {
-					this.plugin.settings.anytxtApiUrl = value;
+					this.plugin.settings.anytxtInstallPath = value;
 					await this.plugin.saveSettings();
 				}));
+
+		new Setting(containerEl)
+		.setName('Anytxt API URL')
+		.setDesc('在Anytxt上方菜单栏：帮助→API接口，默认不可改')
+		.addText(text => text
+			.setPlaceholder('Enter API URL')
+			.setValue(this.plugin.settings.anytxtApiUrl)
+			.onChange(async (value) => {
+				this.plugin.settings.anytxtApiUrl = value;
+				await this.plugin.saveSettings();
+			}));
 	}
 }
