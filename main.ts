@@ -39,7 +39,10 @@ export default class AnytxtSearchPlugin extends Plugin {
 			method: "ATRpcServer.Searcher.V1.Search",
 			params: {
 				input: {
-					pattern: `"${keyword}"`,
+					// pattern: `"${keyword}"`,
+					pattern: keyword,
+					// 关于搜索模式的更改，看这个 [The exact search and fuzzy search functions in the program do not affect HTTP | Anytxt Searcher](https://anytxt.net/forums/topic/the-exact-search-and-fuzzy-search-functions-in-the-program-do-not-affect-http/)
+					// 如果改为精准搜索，给keyword以空格分隔然后加引号？
 					filterDir: vaultBasePath,
 					// filterExt: "png",
                     filterExt: "*",
