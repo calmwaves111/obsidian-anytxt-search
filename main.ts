@@ -22,7 +22,8 @@ export default class AnytxtSearchPlugin extends Plugin {
 
 		this.registerDomEvent(document, 'keydown', (evt: KeyboardEvent) => {
 			const target = evt.target as HTMLInputElement;
-			if (evt.key === 'Enter' && target.getAttribute('enterkeyhint') === 'search' && target.type === 'search' && target.placeholder!="搜索已安装的插件……" && target.placeholder!="搜索社区插件……") { //本来应该区查找父容器是不是设置界面，插件市场界面，但是太深层了呀，还是放弃吧，直接用placeholder也行				const keyword = target.value;
+			if (evt.key === 'Enter' && target.getAttribute('enterkeyhint') === 'search' && target.type === 'search' && target.placeholder=="输入并开始搜索……"){
+				// && target.placeholder!="搜索已安装的插件……" && target.placeholder!="搜索社区插件……"&& target.placeholder!="搜索……") { //本来应该区查找父容器是不是设置界面，插件市场界面，但是太深层了呀，还是放弃吧，直接用placeholder也行，排除掉第三方插件页面，插件商店页面，快捷键页面的搜索框
 				const keyword = target.value;
 				this.searchAnytxt(keyword);
 			}
@@ -42,7 +43,7 @@ export default class AnytxtSearchPlugin extends Plugin {
 					// pattern: `"${keyword}"`,
 					pattern: keyword,
 					// 关于搜索模式的更改，看这个 [The exact search and fuzzy search functions in the program do not affect HTTP | Anytxt Searcher](https://anytxt.net/forums/topic/the-exact-search-and-fuzzy-search-functions-in-the-program-do-not-affect-http/)
-					// 如果改为精准搜索，给keyword以空格分隔然后加引号？
+					// ？如果改为精准搜索，给keyword以空格分隔然后加引号？
 					filterDir: vaultBasePath,
 					// filterExt: "png",
                     filterExt: "*",
