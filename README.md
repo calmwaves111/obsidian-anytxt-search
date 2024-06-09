@@ -6,8 +6,8 @@
 
 1. 安装 [Anytxt Searcher](https://anytxt.cbewin.com/)
 2. 在anytxt对obsidian库文件夹建立索引，并且排除掉md文件和canvas文件
-3. 后台运行Anytxt
-4. 在使用obsidian的核心插件——搜索时，输入关键字，按下回车键，将会自动在anytxt中进行搜索
+3. 在插件页面里配置anytxt的安装路径
+4. 在使用obsidian的核心插件——【搜索】时，输入关键字，按下回车键，将会自动在anytxt中进行搜索
 5. 弹出通知，提示搜索到的文件数量
 6. 右键点击通知，会打开anytxt显示当前搜索结果
 
